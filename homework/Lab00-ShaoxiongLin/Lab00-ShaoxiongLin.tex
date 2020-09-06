@@ -1,0 +1,131 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs,euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,linesnumbered]{algorithm2e}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{solution}{Solution}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+ {\setlength{\epsfxsize}{#2\hsize}
+  \centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+\setlength{\oddsidemargin}{-0.365in}
+\setlength{\evensidemargin}{-0.365in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{10.1in}
+\setlength{\textwidth}{7in}
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+\begin{document}
+\noindent
+
+%========================================================================
+\noindent\framebox[\linewidth]{\shortstack[c]{
+\Large{\textbf{Lab00-Proof}}\vspace{1mm}\\
+CS214-Algorithm and Complexity, Xiaofeng Gao, Spring 2020.}}
+\begin{center}
+\footnotesize{\color{red}$*$ If there is any problem, please contact TA Yiming Liu.}
+
+% Please write down your name, student id and email.
+\footnotesize{\color{blue}$*$ Name: ShaoxiongLin  \quad Student ID: 517010910028 \quad Email: \href{mailto:Johnson-Lin@sjtu.edu.cn}{Johnson-Lin@sjtu.edu.cn}}
+\end{center}
+
+\begin{enumerate}
+    \item
+    Prove that for any integer $n>2$, there is a prime $p$ satisfying $n<p<n!$. {\color{blue}(Hint: consider a prime factor $p$ of $n!-1$ and prove by contradiction)}
+    \begin{proof}
+        Since $n > 2$, $n$ and $2$ are two distinct factors of $n!$. Therefore, $n! \geq 2n = n + n > n + 1$, and thus $n! -1 > n$. 
+        
+        Let us consider a prime factor $p$ of $n!-1$. (Since $n! -1 > n > 2$, $n!-1$ must have a prime factor.) Since $p$ is a divisor of $n! - 1$, we have 
+        $p \leq n! - 1 < n!$. 
+        
+        Suppose for the sake of contradiction that $p \leq n$. Then since $p$ is one of the positive integers less than or equal to $n$, $p$ is a factor of $n!$. Thus we have $p$ is a factor of both $n!$ and $n! -1$, but this can not be true.
+        
+        If $p$ is a factor of both $n!$ and $n! -1$, it will be a factor of $1$, their difference, and this is impossible. Therefore the assumption that $ p \leq n$ leads to a contradiction, now we may conclude that $n < p < n!$.
+    \end{proof}
+
+    \item
+    Use the minimal counterexample principle to prove that for any integer $n>17$, there exist integers $i_n\ge 0$ and $j_n\ge 0$, such that $n = i_n \times 4 + j_n \times 7$.
+    \begin{proof}
+        Let $P(n)$ be the statement: For any integer $n>17$, there exist integers $i_n\ge 0$ and $j_n\ge 0$, such that $n = i_n \times 4 + j_n \times 7$.
+        
+        if $P(n)$ is not true, then there are values of $n$ for which $P(n)$ is false, and there must be a smallest such value, say $n = k$.
+        
+        Since $P(18) = 1 \times 4 + 2 \times 7$, we have $k > 18$, and $k-1 > 17$.
+        
+        Since $k$ is the smallest value for which $P(k)$ is false, $P(k-1)$ is true. Thus there exist integers $i_{k-1}$ and $j_{k-1}$, such that $k-1 = i_{k-1} \times 4 + j_{k-1} \times 7$. Note that $i_{k-1} \geq 1$, and $j_{k-1} \geq 2$.
+        
+        However, we have
+        \begin{eqnarray*}
+        	k & = & (k-1) + 1 \\
+        	& = & (i_{k-1} \times 4 + j_{k-1} \times 7) + 1\\
+        	& = & (i_{k-1} + 2) \times 4 + (j_{k-1} - 1) \times 7
+        \end{eqnarray*}
+    Since $i_{k-1}+2 \geq 0$ and $j_{k-1}-1 \geq 0$, we have $P(k)$ is true. We have derived a contradiction, which allows us to conclude that our original assumption is false.
+    \end{proof}
+
+    \item
+    Let $P=\{p_1, p_2, \cdots\}$ the set of all primes. Suppose that $\{p_i\}$ is monotonically    increasing, i.e., $p_1=2$, $p_2=3$, $p_3=5$, $\cdots$. Please prove: $p_n<2^{2^n}$. {\color{blue}(Hint: $p_i \nmid (1+\prod_{j=1}^n p_j), i=1,2,\cdots,n$.)}
+    \begin{proof}
+        Let $P(n)$ be the statement: $p_n<2^{2^n}$. We try to prove $P(n)$ is true for any integer $n \geq 1$.
+        
+        \textbf{Basis step.} $P(1)$ is the statement that $2 < 4$. This is obviously true. $P(2)$ is the statement that $3 < 16$. This is also true.
+        
+        \textbf{Induction hypothesis.} $k \geq 2$, and for every $n$ with $1 \leq n \leq k$, $p_{n} < 2^{2^{n}}$.
+        
+        \textbf{Proof of induction step.} We first proof that $p_{k+1} \leq 1 + \prod_{j=1}^{k}p_{j}$.
+        
+        If $1 + \prod_{j=1}^{k}p_{j}$ is a prime, since $\prod_{j=1}^{k}p_{j} > p_{k}$, we have $1 + \prod_{j=1}^{k}p_{j} \geq p_{k+1}$.
+        
+        If $1 + \prod_{j=1}^{k}p_{j}$ is not a prime, then it must have prime factors.
+        Since $p_i \nmid (1+\prod_{j=1}^{k} p_j), (i=1,2,\cdots,k$.) we may conclude that all of its prime factors are greater than or equal to $p_{k+1}$. Thus we also have $1 + \prod_{j=1}^{k}p_{j} \geq p_{k+1}$.
+        
+        Now we have
+    	\[ p_{k+1} \leq 1 + \prod_{j=1}^{k}p_{j} < 1 + \prod_{j=1}^{k}2^{2^{j}} = 1 + 2^{2^{k+1} - 2} < 2^{2^{k+1}}\]   	
+    \end{proof}
+
+    \item
+    Prove that a plane divided by $n$ lines can be colored with only $2$ colors, and the adjacent regions have different colors.
+    \begin{proof}
+        Let $P(n)$ be the statement that a plane divided by $n$ lines can be colored with only $2$ colors, and the adjacent regions have different colors.
+        
+        \textbf{Basis step.} when $n = 1$, the plane is divided into two regions, it can be colored with only $2$ colors, and the adjacent regions have different colors. Thus $P(1)$ is true.
+        
+        \textbf{Induction hypothesis.} $k \geq 1$, and for every $n$ with $1 \leq n \leq k$, $P(n)$ is true.
+        
+        \textbf{Proof of induction step.} when $n = k+1$, based on the original, we add a new line $l_{k+1}$, the color on one side of $l_{k+1}$ remains unchanged, and the color on the other side flips.
+        
+        If two regions  were different regions and were colored with different colors when $n = k$, after the process they are still colored with different colors, whether they are on the same side of $l_{k+1}$ or not.
+        
+        If two regions were one region when $n = k$, then they used to be the same color and now they are on the different sides of $l_{k+1}$, after the process they are colored with different colors.
+        
+        Thus we may conclude that $P(k+1)$ is true.
+    \end{proof}
+
+\end{enumerate}
+
+%\vspace{20pt}
+
+%========================================================================
+\end{document}

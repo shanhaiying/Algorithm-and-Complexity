@@ -1,0 +1,186 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs,euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,linesnumbered]{algorithm2e}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{solution}{Solution}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+ {\setlength{\epsfxsize}{#2\hsize}
+  \centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+\setlength{\oddsidemargin}{-0.365in}
+\setlength{\evensidemargin}{-0.365in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{10.1in}
+\setlength{\textwidth}{7in}
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+\begin{document}
+\noindent
+
+%========================================================================
+\noindent\framebox[\linewidth]{\shortstack[c]{
+\Large{\textbf{Lab02-Divide and Conquer}}\vspace{1mm}\\
+CS214-Algorithm and Complexity, Xiaofeng Gao, Spring 2020.}}
+\begin{center}
+\footnotesize{\color{red}$*$ If there is any problem, please contact TA Yiming Liu.}
+
+% Please write down your name, student id and email.
+\footnotesize{\color{blue}$*$ Name: ShaoxiongLin  \quad Student ID: 517010910028 \quad Email: \href{mailto:Johnson-Lin@sjtu.edu.cn}{Johnson-Lin@sjtu.edu.cn}}
+\end{center}
+
+\begin{enumerate}
+    \item
+    \textbf{Quicksort} is based on the Divide-and-Conquer method. Here is the two-step divide-and-conquer process for sorting a typical subarray $A[p \ldots r]$:
+    \begin{enumerate}
+
+    	\item
+    	\textbf{Divide:} Partition the array $A[p \ldots r]$ into two subarrays $A[p \ldots q-1]$ and $A[q+1 \ldots r]$ such that each element of $A[p \ldots q-1]$ is less than or equal to $A[q],$ which is, in turn, less than or equal to each element of $A[q+1 \ldots r].$ Compute the index $q$ as part of this partitioning procedure.
+    	
+    	\item
+    	\textbf{Conquer:} Sort $A[p \ldots q-1]$ and $A[q+1 \ldots r]$ respectively by recursive calls to Quicksort.
+    	
+    \end{enumerate}
+    Write down the recurrence function $T(n)$ of QuickSort and compute its time complexity.
+
+    {\color{purple}Hint: At this time $T(n)$ is split into two subarrays with different sizes (usually), and you need to describe its recurrence relation by the sum of two subfunctions plus additional operations.}
+	\begin{solution}
+		In worst case, the Quicksort algorithm would partition the array into two parts with $n-1$ elements and $0$ elements, and the partitioning of an array with $n$ elements takes $n-1$ comparisons. Thus, the recurrence function is $T(n) = T(n-1) + T(0) + (n-1)$. Since $T(0) = 0$, we have $$T(n) - T(n-1) = (n-1)$$ Apply this equation to $n-1, n-2,\dots,1$ and sum them up, we get $$T(n) - T(0) = \sum_{i=0}^{n-1}i$$ Since $T(0) = 0$, then $T(n) = \frac{(n-1)n}{2} = O(n^{2})$.
+	\end{solution}
+    \item
+    \textbf{MergeCount}. Given an integer array $A[1 \ldots n]$ and two integer thresholds $t_l \le t_u$, Lucien designed an algorithm using divide-and-conquer method (As shown in Alg.~\ref{Alg-MergeCount}) to count the number of ranges $(i,j)$ ($1 \leq i \leq j \leq n$) satisfying
+    \begin{equation}\label{Eqn-MergeCount}
+    t_l \leq \sum_{k=i}^{j}{A[k]} \leq t_u.
+    \end{equation}
+
+    Before computation, he firstly constructed $S[0 \ldots n+1]$, where $S[i]$ denotes the sum of the first $i$ elements of $A[1 \ldots n]$. Initially, set $S[0]=S[n+1]=0$, $low=0$, $high=n+1$.
+
+\begin{minipage}[t]{0.90\textwidth}
+	\begin{algorithm}[H]
+		%\algsetup{footnotesize}
+		%\scriptsize
+		\KwIn{$S[0,\cdots,n+1]$, $t_l$, $t_u$, $low$, $high$.}
+		\KwOut{$count$ = number of ranges satisfying Eqn.~\eqref{Eqn-MergeCount}.}
+		\BlankLine
+		\caption{MergeCount($S$, $t_l$, $t_u$, $low$, $high$)}
+		\label{Alg-MergeCount}
+		
+		$count \leftarrow 0$; $mid\leftarrow \lfloor \frac{low+high}{2} \rfloor$\;
+		
+		\lIf{$mid=low$}{
+			\Return{$0$}
+		}
+		
+		$count\leftarrow MergeCount(S, t_l, t_u, low, mid)+ MergeCount(S, t_l, t_u, mid, high)$\;
+		
+		\For{$i = low$ \textbf{to} $mid-1$}{
+			$m \leftarrow \left \{ \begin{array}{ll}
+            \min\{m \mid S[m]-S[i] \ge t_l, m \in [mid, high-1]\}, & \text{if exists}\\
+            high, & \text{if not exist}
+            \end{array}\right.$\;
+			
+			$n \leftarrow \left \{ \begin{array}{ll}
+            \min\{n \mid S[n]-S[i] > t_u, n \in [mid, high-1]\}, & \text{if exists}\\
+            high, & \text{if not exist}
+            \end{array}\right.$
+			\tcp*[r]{\color{blue}BinarySearch is used to find $m$, $n$}
+			$count \leftarrow count+n-m$\;
+		}
+		$Merge(S,low,mid-1,high-1)$  \tcp*[r]{\color{blue}Merge is used for two sorted arrays}
+		
+		\Return{$count$}\;
+		
+	\end{algorithm}
+\end{minipage}
+
+    {\color{purple}\textbf{Example:} Given $A = [1,-1,2]$, $lower = 1$, $upper = 2$, return 4. The resulting four ranges should be $(1,1)$, $(1,3)$, $(2,3)$, and $(3,3)$.}
+
+    Is Lucien's algorithm correct? Explain his idea and make correction if needed. Besides, compute the running time of Alg.~\ref{Alg-MergeCount} (or the corrected version) by recurrence relation. {\color{blue}(Note: we can't implement Master's Theorem in this case. Refer Reference06 for more details.)}
+	\begin{solution}
+		The algorithm is correct, the idea of this algorithm is that for an array with $n$ elements, the ranges satisfying Eqn.~\eqref{Eqn-MergeCount} can be divided into three cases 
+		\begin{itemize}
+			\item[(a)] Both $i$ and $j$ are in the left half of the array.
+			\item[(b)] Both $i$ and $j$ are in the right half of the array.
+			\item[(c)] $i$ is in the left half and $j$ is in the right half.
+		\end{itemize}
+	Thus the total number of ranges statisfying Eqn.~\eqref{Eqn-MergeCount} can be counted Recursively.
+	
+	The algorithm first divides the problem of size $n$ into two similar subproblems of size $n/2$. After the subproblems are conquered, the for loop will run $n/2$ times, every time the BinarySearch used to find $m$ and $n$ costs $O(\log (n/2))$ time, the final merge operation costs $O(n)$ time.The recurrence relation of Alg.~\ref{Alg-MergeCount} is $$T(n) = 2T(\frac{n}{2}) + nO(\log \frac{n}{2}) + O(n)$$
+	By using recursion-tree method, the tree has $\log n$ levels, in the $j$th level($j$ starts from $0$), there are $2^{j}$ subproblems, and each with a size of $n/2^{j}$, the solution is $T(n) = O(n \log^{2}n)$
+	\end{solution}
+    \item
+    \textbf{Batcher's odd-even merging network.} In this problem, we shall construct an \textbf{\textit{odd-even merging network}}. We assume that $n$ is an exact power of $2$, and we wish to merge the sorted sequence of elements on lines $\left\langle a_{1}, a_{2}, \ldots, a_{n}\right\rangle$ with those on lines $\left\langle a_{n+1}, a_{n+2}, \ldots, a_{2n}\right\rangle .$ If $n=1$, we put a comparator between lines $a_{1}$ and $a_{2}$. Otherwise, we recursively construct two odd-even merging networks that operate in parallel. The first merges the sequence on lines $\left\langle a_{1}, a_{3}, \ldots, a_{n-1}\right\rangle$ with the sequence on lines $\left\langle a_{n+1}, a_{n+3}, \ldots, a_{2n-1}\right\rangle$ (the
+    odd elements). The second merges $\left\langle a_{2}, a_{4}, \ldots, a_{n}\right\rangle$ with $\left\langle a_{n+2}, a_{n+4}, \ldots\right.$
+    $\left.a_{2n}\right\rangle$ (the even elements). To combine the two sorted subsequences, we put a comparator between $a_{2i}$ and $a_{2i+1}$ for $i=1,2, \ldots, n-1$.
+    \begin{enumerate}
+    	\item Replace the original Merger (taught in class) with Batcher's new Merger, and draw $2n$-input sorting networks for $n=8, 16, 32, 64$. {\color{blue}(Note: you are not forced to use Python Tkinter. Any visualization tool is welcome for this question.)}
+    	
+    	\item What is the depth of a $2n$-input odd-even sorting network?
+    	
+    	\item
+    	{\color{red}{(Optional Sub-question with Bonus)}} Use the zero-one principle to prove that any $2n$-input odd-even merging network is indeed a merging network.
+    	
+    \end{enumerate}
+	\begin{solution}
+		\begin{enumerate}
+			\item[(a)] See Fig.\ref{Fig-G1} ~ Fig.\ref{Fig-G4}
+			\begin{figure}[htbp]
+				\begin{minipage}[h]{0.45\textwidth}
+					\centering
+					\includegraphics[width=0.5\textwidth,angle=90]{2_8.pdf}
+					\caption{Graph $G_1$} \label{Fig-G1}
+				\end{minipage}
+				\hspace{5mm}
+				\begin{minipage}[h]{0.45\textwidth}
+					\centering
+					\includegraphics[width=0.5\textwidth,angle=90]{2_16.pdf}
+					\caption{Graph $G_2$} \label{Fig-G2}
+				\end{minipage}
+			 	\vspace{5mm}
+			 	\begin{minipage}[h]{0.45\textwidth}
+			 		\centering
+			 		\includegraphics[width=0.5\textwidth,angle=90]{2_32.pdf}
+			 		\caption{Graph $G_3$} \label{Fig-G3}
+			 	\end{minipage}
+		 		\hspace{5mm}
+		 		\begin{minipage}[h]{0.45\textwidth}
+		 			\centering
+		 			\includegraphics[width=0.5\textwidth,angle=90]{2_64.pdf}
+		 			\caption{Graph $G_4$} \label{Fig-G4}
+		 		\end{minipage}
+			\end{figure}
+			\item[(b)] We denote the depth of a Since a $2n$-input odd-even sorting network as $D(2n)$. Since a $2n$-input odd-even sorting network can be recursively constructed, we have the recurrence function $$D(2n) = D(n) + O(\log n)$$ By recurrence computation, the solution is $D(2n) = O(\log^{2} n)$.
+		\end{enumerate}
+	\end{solution}
+	
+\end{enumerate}
+
+\vspace{20pt}
+
+\textbf{Remark:} You need to include your .pdf, .tex and .py files (or other possible sources) in your uploaded .rar or .zip file.
+
+%========================================================================
+\end{document}

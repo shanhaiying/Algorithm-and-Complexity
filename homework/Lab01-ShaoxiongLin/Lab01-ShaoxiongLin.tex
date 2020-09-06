@@ -1,0 +1,173 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs,euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,linesnumbered]{algorithm2e}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{solution}{Solution}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+ {\setlength{\epsfxsize}{#2\hsize}
+  \centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+\setlength{\oddsidemargin}{-0.365in}
+\setlength{\evensidemargin}{-0.365in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{10.1in}
+\setlength{\textwidth}{7in}
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+\begin{document}
+\noindent
+
+%========================================================================
+\noindent\framebox[\linewidth]{\shortstack[c]{
+\Large{\textbf{Lab01-AlgorithmAnalysis}}\vspace{1mm}\\
+CS214-Algorithm and Complexity, Xiaofeng Gao, Spring 2020.}}
+\begin{center}
+\footnotesize{\color{red}$*$ If there is any problem, please contact TA Shuodian Yu.}
+
+% Please write down your name, student id and email.
+\footnotesize{\color{blue}$*$ Name: ShaoxiongLin  \quad Student ID: 517010910028 \quad Email: \href{mailto:Johnson-Lin@sjtu.edu.cn}{Johnson-Lin@sjtu.edu.cn}}
+\end{center}
+
+\begin{enumerate}
+    \item
+    Please analyze the time complexity of Alg.~\ref{Alg-PSUM} with brief explanations.
+
+    \begin{minipage}[t]{0.8\textwidth}
+    \begin{algorithm}[H]
+        \caption{PSUM}\label{Alg-PSUM}
+        \KwIn{$n=k^2$, $k$ is a positive integer.}
+        \KwOut{$\sum_{i=1}^j i$ for each perfect square $j$ between 1 and $n$.}
+
+        \BlankLine
+
+        $k \leftarrow \sqrt{n}$\;
+
+        \For{$j\leftarrow 1$ {\bf to} $k$}{
+            $sum[j]\leftarrow 0$\;
+            \For{$i \leftarrow 1$ {\bf to} $j^2$}{
+                $sum[j]\leftarrow sum[j]+i$\;
+            }
+        }
+
+        {\bf return} $sum[1\cdots k]$\;
+    \end{algorithm}
+    \end{minipage}
+
+    \begin{solution}
+        The outer for loop will run $k$ times, and in the $j$th iteration, the inner for loop will run $j^{2}$ times. Thus the total number of iterations is$$\sum_{j=1}^{k}\sum_{i=1}^{j^{2}}1 = \sum_{j=1}^{k}j^{2} = \frac{k(k+1)(2k+1)}{6} = \frac{2n^{\frac{3}{2}}+3n+n^{\frac{1}{2}}}{6}$$
+        Since $$\lim_{x\rightarrow\infty}\frac{2n^{\frac{3}{2}}+3n+n^{\frac{1}{2}}}{6n^{\frac{3}{2}}} = \frac{1}{3}$$we can conclude the time complexity of Alg.~\ref{Alg-PSUM} is $\Theta(n^{\frac{3}{2}})$.
+    \end{solution}
+
+    \item
+    Analyze the \textbf{average} time complexity of QuickSort in Alg.~\ref{Alg_Quick}.
+
+    \begin{minipage}[t]{0.8\textwidth}
+    \begin{algorithm}[H]
+      \KwIn{An array $A[1,\cdots,n]$}
+      \KwOut{$A[1,\cdots,n]$ sorted nondecreasingly}
+
+      \BlankLine
+      \caption{QuickSort}\label{Alg_Quick}
+
+      %\If{$n \le 1$}{
+      %  \Return\;
+      %}
+
+      $pivot \leftarrow A[n]$; $i \leftarrow 1$\;
+      \For{$j \leftarrow 1$ \KwTo $n-1$}{
+        \If{$A[j] < pivot$}{
+          swap $A[i]$ and $A[j]$\;
+          $i \leftarrow i+1$\;
+        }
+      }
+
+      swap $A[i]$ and $A[n]$\;
+      \lIf{$i>1$}{$\operatorname{QuickSort}(A[1,\cdots,i-1])$}
+      \lIf{$i<n$}{$\operatorname{QuickSort}(A[i+1,\cdots,n])$}
+    \end{algorithm}
+    \end{minipage}
+
+    \begin{solution}
+       We denote the number of basic operations to sort an array with $n$ elements is $T(n)$, and we have $T(0) = T(1) = 0$. The time complexity of QuickSort depends on where the $pivot$ locates in the finally sorted array. To analyze the average time complexity of QuickSort, we assume the probability that the $pivot$ locates in each slot of the array is equal. Thus, we have $$T(n) = (n-1) + \frac{1}{n}\sum_{j=0}^{n-1}(T(j) + T(n-j-1))$$ To get the order of $T(n)$, we multiply $n$ to both of the two sides of the equation and get $$nT(n) = n(n-1) + 2\sum_{j=0}^{n-1}T(j)$$ Subtracting this from the same equation for $n-1$ gives $$\frac{T(n)}{n+1} = \frac{T(n-1)}{n} + \frac{2}{(n+1)} - \frac{2}{n(n+1)}$$ We denote $\frac{T(n)}{n+1}$ as $a_{n}$, and we have $$a_{n} - a_{n-1} = \frac{2}{(n+1)} - \frac{2}{n(n+1)}$$ Since $a_{0} = 0$ and $a_{n} = a_{n} - a_{n-1} + a_{n-1} - a_{n-2} + \cdots + a_{1} - a_{0}$, we have $$\frac{T(n)}{n+1} = a_{n} = 2\sum_{i=1}^{n}\frac{1}{n+1} - 2\sum_{i=1}^{n}\frac{1}{n(n+1)}$$ From the above equation, we can easily get that the order of $T(n)$ is $O(n\log n)$
+    \end{solution}
+
+    \item
+    The BubbleSort mentioned in class can be improved by stopping in time if there are no swaps during an iteration. An indicator is used thereby to check whether the array is already sorted. Analyze the \textbf{average} and \textbf{best} time complexity of the improved BubbleSort in Alg.~\ref{Alg_Bubble}.
+
+    \begin{minipage}[t]{0.8\textwidth}
+    \begin{algorithm}[H]
+        \KwIn{An array $A[1,\dots,n]$}
+        \KwOut{$A[1,\dots,n]$ sorted nondecreasingly}
+
+        \BlankLine
+        \caption{BubbleSort}\label{Alg_Bubble}
+
+        $i\leftarrow 1$;$sorted\leftarrow false$\;
+
+        \While{$i\leq n-1$ \textbf{and not} $sorted$}{
+            $sorted\leftarrow true$\;
+            \For{$j\leftarrow n $ \textbf{downto} $i+1$}{
+                \If{$A[j]<A[j-1]$}{
+                    interchange $A[j]$ and $A[j-1]$\;
+                    $sorted\leftarrow false$\;
+                }
+            }
+            $i\leftarrow i+1$\;
+        }
+    \end{algorithm}
+    \end{minipage}
+
+    \begin{solution}
+        The best case appears when the input array is already sorted in nondecreasing order, in this case the outer while loop and the inner for loop will only execute one time, so the best time complexity is $\Omega(n)$.
+        
+        To sort the array with the improved BubbleSort, the outer while loop will run at least $1$ time, at most $n-1$ times. If the outer while loop run $k$ times, the total number of basic operations is $\sum_{i=1}^{k}\sum_{j=i+1}^{n}1 = \sum_{i=1}^{k}(n-i)$. We assume the probability that $k$ equals to any integer ranging from $1$ to $n-1$ is the same. Thus, we have the average time complexity is $$\frac{1}{n-1}\sum_{k=1}^{n-1}\sum_{i=1}^{k}(n-i) = \frac{1}{n-1}\sum_{k=1}^{n-1}(kn-\frac{k^{2}}{2}-\frac{k}{2}) = \frac{2n^{2}-n}{6} = O(n^{2})$$
+    \end{solution}
+
+    \item
+
+    Rank the following functions by order of growth with brief explanations: that is, find an arrangement $g_1, g_2, \ldots , g_{15}$ of the functions $g_1 = \Omega(g_2), g_2 = \Omega(g_3), \ldots, g_{14} = \Omega(g_{15})$.  Partition your list into equivalence classes such that functions $f(n)$ and $g(n)$ are in the same class if and only if $f(n) = \Theta(g(n))$. Use symbols ``$=$'' and ``$\prec$'' to order these functions appropriately.
+    $$
+    \begin{array}{ccccc}
+        2^{\lg n} \quad & \quad (\lg n)^{\lg n} \quad & \quad n^2 \quad & \quad n! \quad & \quad (n + 1)! \\
+        2^n \quad & \quad n^3 \quad & \quad \lg^2 n \quad & \quad e^n \quad & \quad 2^{2^n} \\
+        \lg\lg n \quad & \quad n\cdot 2^n \quad & \quad n \quad & \quad \lg n \quad & \quad 4^{\lg n} \\
+    \end{array}
+    $$
+
+    \begin{solution}
+        It is easy to conclude that $\lg\lg n \prec \lg n$. Since $\lim_{n\rightarrow\infty}\frac{n}{\lg^{2}n}=+\infty$, $\lim_{n\rightarrow\infty}\frac{n}{2^{\lg n}}=1$, $\lim_{n\rightarrow\infty}\frac{n^{2}}{4^{\lg n}}=1$ and $\lim_{n\rightarrow\infty}\frac{(\lg n)^{\lg n}}{n^3}=+\infty$ , thus we have $$\lg\lg n \prec \lg n \prec \lg^2 n \prec 2^{\lg n} = n \prec 4^{\lg n} = n^{2} \prec n^{3} \prec (\lg n)^{\lg n}$$
+        Since $\lim_{n\rightarrow\infty}\frac{2^n}{(\lg n)^{\lg n}}=+\infty$ and $\lim_{n\rightarrow\infty}\frac{e^n}{n\cdot2^{n}}=+\infty$ so $2^{n} = \omega((\lg n)^{\lg n})$. Now we have $$\lg\lg n \prec \lg n \prec \lg^2 n \prec 2^{\lg n} = n \prec 4^{\lg n} = n^{2} \prec n^{3} \prec (\lg n)^{\lg n} \prec 2^{n} \prec n\cdot2^{n} \prec e^{n} \prec n! \prec (n+1)! \prec 2^{2^n}$$
+    \end{solution}
+
+\end{enumerate}
+
+\vspace{20pt}
+
+\textbf{Remark:} You need to include your .pdf and .tex files in your uploaded .rar or .zip file.
+
+%========================================================================
+\end{document}

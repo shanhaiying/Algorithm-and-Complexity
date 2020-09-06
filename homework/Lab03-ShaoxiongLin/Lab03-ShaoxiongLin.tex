@@ -1,0 +1,179 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs,euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,linesnumbered]{algorithm2e}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{solution}{Solution}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+ {\setlength{\epsfxsize}{#2\hsize}
+  \centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+\setlength{\oddsidemargin}{-0.365in}
+\setlength{\evensidemargin}{-0.365in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{10.1in}
+\setlength{\textwidth}{7in}
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+\begin{document}
+\noindent
+
+%========================================================================
+\noindent\framebox[\linewidth]{\shortstack[c]{
+\Large{\textbf{Lab03-GreedyStrategy}}\vspace{1mm}\\
+CS214-Algorithm and Complexity, Xiaofeng Gao, Spring 2020.}}
+\begin{center}
+\footnotesize{\color{red}$*$ If there is any problem, please contact TA Shuodian Yu.}
+
+% Please write down your name, student id and email.
+\footnotesize{\color{blue}$*$ Name: ShaoxiongLin  \quad Student ID: 517010910028 \quad Email: \href{mailto:Johnson-Lin@sjtu.edu.cn}{Johnson-Lin@sjtu.edu.cn}}
+\end{center}
+
+\begin{enumerate}
+    \item
+    There are $n+1$ people, each with two attributes $(a_i,b_i), i\in[0,n] \text{ and } a_i>1$. The $i$-th person can get money worth $c_i = \frac{\prod_{j=0}^{i-1}{a_j}}{b_i}$. We do not want anyone to get too much. Thus, please design a strategy to sort people from $1$ to $n$, such that the maximum earned money $c_{max}=\max\limits_{1\leq i\leq n} c_i$ is minimized. (Note: the 0-th person doesn't enroll in the sorting process, but $a_0$ always works for each $c_i$.)
+    \begin{enumerate}
+        \item Please design an algorithm based on greedy strategy to solve the above problem. (Write a pseudocode)
+        \item Prove your algorithm is optimal.
+    \end{enumerate}
+
+    \begin{solution}
+        \begin{enumerate}
+        	\item 
+        		\begin{minipage}[t]{0.7\textwidth}
+        			\centering
+        			\begin{algorithm}[H]
+        				%\LinesNumbered
+        				\KwIn{$n+1$ attibute pairs $(a_i,b_i)$ to be sorted in some way, $i$ ranges from $0$ to $n$}
+        				\KwOut{the minimized maximum earned money $c_{max}$}
+        				\BlankLine
+        				\caption{$greedy1$} \label{Alg-gre1}
+        				sort the $(a_i,b_i)$ by $a_i \times b_i$ in nondecresing way except $(a_0,b_0)$\;
+        				$c_{max} \leftarrow 0$, $prod \leftarrow 1$\;
+        				\For{$i \leftarrow 1$ to $n$}{
+        					$prod \leftarrow prod \times a_{i-1}$\;
+        					$c_i \leftarrow \frac{prod}{b_i}$\;
+        					\uIf{$c_i > c_{max}$}{
+        						$c_{max} \leftarrow c_i$\;
+        					}
+        					\Else{
+        						\textbf{continue}\;
+        					}
+        				}
+        				\Return{$c_{max}$}\;
+        			\end{algorithm}
+        		\end{minipage}
+        	\item For the sake of convenience, given a arrangement of people, we say the arrangement has an inversion if there are two people, say $i$ and $j$, such that $a_i \times b_i < a_j \times b_j$ but $j$ stands before $i$ in the sequence.
+        	Define $S$ to be the solution provided by the Alg.\ref{Alg-gre1}, it is easy to see $S$ has no inversion. Define $S^{*} $ to be an optimal arrangement that has the fewest number of inversions.
+        	If $S^{*}$ has no inversion, then $S^{*} = S$. If $S^{*}$ has an inversion, let $i, j$ be an adjacent inversion. Swapping $i$ and $j$ does not affect the money earned by the people before as well as people behind them, but since $a_i \times b_i < a_j \times b_j$, $c_j$ used to be $\frac{\prod_{k=0}^{j-1}a_{k}}{b_j}$, $c_i$ used to be $\frac{\prod_{k=0}^{j-1}a_{k} \times a_j}{b_i}$, after swapping, $a_j'$ now is $\frac{\prod_{k=0}^{j-1}a_{k} \times a_i}{b_j}$ and $a_i'$ now is $\frac{\prod_{k=0}^{j-1}a_{k}}{b_i}$. It is easy to see $\max(a_i,a_j) > \max(a'_i,a'_j)$, thus after swapping we have $c_{max} \leq c'_{max}$, it is still an optimal solution.
+        \end{enumerate}
+    \end{solution}
+
+    \item
+    \textbf{Interval Scheduling} is a classic problem solved by greedy algorithm and we have introduced it in the lecture: given $n$ jobs and the $j$-th job starts at $s_j$ and finishes at $f_j$. Two jobs are compatible if they do not overlap. The goal is to find maximum subset of mutually compatible jobs. Tim wants to solve it by sort the jobs in descending order of $s_j$. Is this attempt correct? Prove the correctness of such idea, or else provide a counter-example.
+
+    \begin{proof}
+        This attempt is correct. Assume this attempt is not optimal. Let $i_1, i_2, \cdots, i_k$ denote set of jobs selected by this attempt. Let $j_1, j_2, \cdots, j_m$ denote set of jobs in an optimal solution with $i_k = j_m, i_{k-1} = j_{m-1}, \cdots, i_{k-r} = j_{m-r}$ for the largest possible value of $r$. We can replace $j_{m-(r+1)}$ with $i_{k-(r+1)}$, solution still feasible and optimal, but contradicts the maximality of r.
+        
+        \begin{minipage}[t]{0.85\textwidth}
+        	\centering
+        \begin{tikzpicture}
+        \draw[->] (0,0) -- (10,0);
+        \draw[fill=gray!50] (8,0) rectangle (9,0.5);
+        \draw[fill=gray!50] (6,0) rectangle (7.5,0.5);
+        \draw[fill=gray!50] (4.8,0) rectangle (5.8,0.5);
+        \draw[fill=gray!50] (3,0) rectangle (4.5,0.5);
+        \draw[fill=gray!50] (1.5,0) rectangle (2.4,0.5);
+        \draw (8.5,0.25) node  {$i_k$};
+        \draw (6.75,0.25) node  {$\cdots$};
+        \draw (5.3,0.25) node  {$i_{k-r}$};
+        \draw (3.75,0.25) node  {$i_{k-(r+1)}$};
+        \draw (1.975,0.25) node  {$\cdots$};
+       	
+        \draw[dashed] (4.8,0.65) -- (4.8,0.25-1.5);
+        \draw[dashed] (2.7,0.65) -- (2.7,0.25-1.5);
+        \draw[->] (0,-1.5) -- (10,-1.5);
+        \draw[fill=gray!50] (8,0-1.5) rectangle (9,0.5-1.5);
+        \draw[fill=gray!50] (6,0-1.5) rectangle (7.5,0.5-1.5);
+        \draw[fill=gray!50] (4.8,0-1.5) rectangle (5.8,0.5-1.5);
+        \draw[fill=gray!50] (2.7,0-1.5) rectangle (4.2,0.5-1.5);
+        \draw[fill=gray!50] (1.3,0-1.5) rectangle (2.3,0.5-1.5);
+        \draw (8.5,0.25-1.5) node  {$j_m$};
+        \draw (6.75,0.25-1.5) node  {$\cdots$};
+        \draw (5.3,0.25-1.5) node  {$j_{m-r}$};
+        \draw (3.45,0.25-1.5) node  {$j_{m-(r+1)}$};
+        \draw (1.8,0.25-1.5) node  {$\cdots$};
+        \end{tikzpicture}
+    	\end{minipage}
+    \end{proof}
+
+    \item
+    There are $n$ lectures numbered from $1$ to $n$. Lecture $i$ has duration (course length) $t_i$ and will close on $d_i$-th day. That is, you could take lecture $i$ \textbf{continuously} for $t_i$ days and must finish before or on the $d_i$-th day. The goal is to find the maximal number of courses that can be taken. (Note: you will start learning at the $1$-st day.)
+    
+    Please design an algorithm based on greedy strategy to solve it. You could use the data structrue learned on Data Structrue course. You need to write pseudo code and prove its correctness.
+
+    \begin{solution}
+    	 Given a schedule S, we say it has an inversion if there is a pair of lectures $i$ and $j$ such that $d_j > d_i$ or $d_j = d_i, t_j > t_i$ but $j$ scheduled before $i$.
+    	 
+    	 Suppose $S$ is the solution provided by Alg.\ref{Alg-gre2}, and $S^{*}$ is an optimal solution with inversions. We can say that $S$ will not have inversion, and we can change $S^{*}$ step by step into $S$ without hurting its quality. Let $i$ and $j$ be an adjacent inversion, swapping $i$ and $j$ dose not affect the lectures before as well as after them, and since $d_j > d_i$ or $d_j = d_i, t_j > t_i$, after swapping, the number of courses that can be taken will not reduce. We can do this repeatedly until there is no inversion in $S^{*}$, at that time $S^{*}$ is actually $S$.
+    	 \\
+        \begin{minipage}[t]{0.7\textwidth}
+        	\centering
+        	\begin{algorithm}[H]
+        		%\LinesNumbered
+        		\KwIn{$n$ pairs $(d_i,t_i)$ to be sorted in some way, $i$ ranges from $1$ to $n$}
+        		\KwOut{the set of the maximal number of courses that can be taken}
+        		\BlankLine
+        		\caption{$greedy2$} \label{Alg-gre2}
+        		sort the $(d_i,t_i)$ by $d_i$ in nondecresing way, sort by $t_i$ in nondecresing way(not broken the result of $d_i$)\;
+        		$A \leftarrow \emptyset$\;
+        		\For{$i \leftarrow 1$ to $n$}{
+        			\uIf{$job_j$ \textrm{ is compatible with} $A$}{
+        				$A \leftarrow A \cup \{job_j\}$\;
+        			}
+        			\Else{
+        				\textbf{continue}\;
+        			}
+        		}
+        		\Return{$A$}\;
+        	\end{algorithm}
+        \end{minipage}
+    \end{solution}
+
+    \item
+    Let $S_1,S_2,\dots,S_n$ be a partition of $S$ and $k_1,k_2,\dots,k_n$ be positive integers. Let $\mathcal{I}=\{I: I \subseteq S,|I \cap S_i| \leq k_i \text { for all } 1 \leq i \leq n\}$. Prove that $\mathcal{M}=(S,\mathcal{I})$ is a matroid.
+
+    \begin{proof}
+        First, we prove that $\mathcal{I}$ is hereditary. Suppose $X \subseteq Y$ and $Y \in \mathcal{I}$, that is $Y \subseteq S $ and $|Y \cap S_i| \leq k_i \text { for all } 1 \leq i \leq n$. Since $X \subseteq Y$, we have $X \subseteq S $ and $|X \cap S_i| \leq |Y \cap S_i| \leq k_i \text { for all } 1 \leq i \leq n$, so $X \in \mathcal{I}$, thus $\mathcal{I}$ is hereditary. 
+        
+        Second, we prove that $\mathcal{M}$ satisfies the exchange property. Suppose $A \in \mathcal{I}, B \in \mathcal{I}$, and $|A| < |B|$, then there must be an element, say $x$, such that $x \in B$ but $x \notin A$. Since $S_1,S_2,\dots,S_n$ is a partition of $S$, then there must be a set, say $S_j$, such that $x \in B \cap S_j$. We construct a new set $A \cup \{x\}$, it easy to see that $A \cup \{x\} \subseteq B \subseteq S$ and for any $i \neq j$, we have $A \cup \{x\} \cap S_i = A \cap S_i$, thus $|A \cup \{x\} \cap S_i| = |A \cap S_i| \leq k_i$. If $i = j$, we have $|A \cup \{x\} \cap S_i| \leq |B \cap S_i| \leq k_i$. Thus, $A \cup \{x\} \in \mathcal{I}$, so $\mathcal{M}$ satisfies the exchange property. Finally, we can say that $\mathcal{M}=(S,\mathcal{I})$ is a matroid.
+    \end{proof}
+
+\end{enumerate}
+
+%========================================================================
+\end{document}

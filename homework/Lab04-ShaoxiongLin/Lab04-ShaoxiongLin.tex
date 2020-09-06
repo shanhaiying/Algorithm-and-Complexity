@@ -1,0 +1,262 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{amsmath,amscd,amsbsy,amssymb,latexsym,url,bm,amsthm}
+\usepackage{epsfig,graphicx,subfigure}
+\usepackage{enumitem,balance}
+\usepackage{wrapfig}
+\usepackage{mathrsfs,euscript}
+\usepackage[usenames]{xcolor}
+\usepackage{hyperref}
+\usepackage[vlined,ruled,linesnumbered]{algorithm2e}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{solution}{Solution}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\newcommand{\postscript}[2]
+{\setlength{\epsfxsize}{#2\hsize}
+	\centerline{\epsfbox{#1}}}
+
+\renewcommand{\baselinestretch}{1.0}
+
+\setlength{\oddsidemargin}{-0.365in}
+\setlength{\evensidemargin}{-0.365in}
+\setlength{\topmargin}{-0.3in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{10.1in}
+\setlength{\textwidth}{7in}
+\makeatletter \renewenvironment{proof}[1][Proof] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+\makeatletter
+\renewenvironment{solution}[1][Solution] {\par\pushQED{\qed}\normalfont\topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\@addpunct{.}]\ignorespaces}{\popQED\endtrivlist\@endpefalse} \makeatother
+
+\begin{document}
+	
+	\noindent
+	
+	%========================================================================
+	\noindent\framebox[\linewidth]{\shortstack[c]{
+			\Large{\textbf{Lab04-Matroid}}\vspace{1mm}\\
+			CS214-Algorithm and Complexity, Xiaofeng Gao, Spring 2020.}}
+	\begin{center}
+		\footnotesize{\color{red}$*$ If there is any problem, please contact TA Yiming Liu.}
+		
+		% Please write down your name, student id and email.
+		\footnotesize{\color{blue}$*$ Name: ShaoxiongLin  \quad Student ID: 517010910028 \quad Email: \href{mailto:Johnson-Lin@sjtu.edu.cn}{Johnson-Lin@sjtu.edu.cn}}
+	\end{center}
+	
+	\begin{enumerate}
+		\item Give a directed graph $G=(V,E)$ whose edges have integer weights. Let $w(e)$ be the weight of edge $e\in E$. We are also given a constraint $f(u)\geq 0$ on the out-degree of each node $u\in V$. Our goal is to find a subset of edges with maximal weight, whose out-degree at any node is no greater than the constraint.
+		\begin{enumerate}
+			\item Please define independent sets and prove that they form a matroid.
+			\item Write an optimal greedy algorithm based on Greedy-MAX in the form of \emph{pseudo code}.
+			\item Analyze the time complexity of your algorithm.
+		\end{enumerate}
+		\begin{solution}
+			\noindent
+			\begin{enumerate}
+				\item We consider the pair $(E,\mathcal{I})$, where $E$ is the edges of graph $G$, and $\mathcal{I}$ is a family of subsets of $E$. A subset of $E$ is in $\mathcal{I}$ if its out-degree at any node is no greadter than the constraint. We then prove that $(E,\mathcal{I})$ is matroid.
+				
+				Suppose $I \in \mathcal{I}$ and $I' \subseteq I$, since $I \in \mathcal{I}$, thus its out-degree at any node is no greater than the constraint, and since $I' \subseteq I$, we can get $I'$ by deleting some edges in $I$, and this operation will not increase the out-degree of the set, thus $I'$ also satisfies the requirement, so we have $I' \in \mathcal{I}$.
+				
+				%Suppose there are two different set $I_1, I_2$, such that $I_1 \in \mathcal{I}, I_2 \in \mathcal{I}$ and $|I_1| < |I_2|$. We consider an edge $e\left\langle a,b\right\rangle$  such that $e \in I_2$ but $e \notin I_1$. We can konw that $f(a) \geq 1$, and if there are no edges in $I_1$, who start form $a$ and point to $b$, we can see that $I_1 \cup \{e\} \in \mathcal{I}$. If there is an edge in $I_1$ such that it starts from a node (not $a$) and points to $b$, then adding $e$ into $I_1$ will not change its out-degree at any node, thus $I_1 \cup \{e\} \in \mathcal{I}$. If for every edge that in $I_2$ but not in $I_1$, the above two cases can not be satisfied, then, take $e$ for example, we can say the out degree of $a$ in $I_1$ is smaller than that in $I_2$, since $I_2 \in \mathcal{I}$, in $I_2$ we have $D_{out}(a) \leq f(a) $, thus after adding $e$ into $I_1$, in $I_1 \cup \{e\}$ we still have $D_{out}(a) \leq f(a) $, thus $I_1 \cup \{e\} \in \mathcal{I}$.%
+				
+				For any subset $F \subseteq E$, let $d^{+}_{F}(u)$ be the number of out-edges at $u$ which belong $F$. Then all maximal independent sets in $F$ have the same size, that is $\sum_{u \in V}\min\{ f(u),d^{+}_{F}(u)\}$. Thus, we have for any any subset $F \subseteq E$, $u(F) = v(F)$, where $v(F)$ is the maximum size of independent subset in $F$ and $u(F)$ is the minimum size of maximal independent subset in $F$. 
+				
+				Thus, we can say that $(E,\mathcal{I})$ is a matroid.
+				\item {\noindent
+					\begin{minipage}[t]{0.9\textwidth}
+						\centering
+						\begin{algorithm}[H]
+							%\LinesNumbered
+							\KwIn{directed graph $G=(V,E)$,$w(e)$ for $e \in E$ and $f(u)$ for $u \in V$}
+							\KwOut{a subset of edges with maximal weight, whose out-degree at any node is no greater than the constraint}
+							\BlankLine
+							\caption{$greedy1$} \label{Alg-gre1}
+							sort the edges in $G$ into ordering $w(e_1) \geq w(e_2) \geq \cdots \geq w(e_m)$\;
+							$A \leftarrow \emptyset$\;
+							\For{$i \leftarrow 1$ to $m$}{
+								\uIf{$A \cup \{e_i\} \in \mathcal{I}$}{
+									$A \leftarrow A \cup \{e_i\}$\;
+								}
+								\Else{
+									\textbf{continue}\;
+								}
+							}
+							\Return{$A$}\;
+						\end{algorithm}
+					\end{minipage}
+				}
+				
+				\item The for loop will run $m$ times, and each time the algorithm needs to judge whether $A$ is still independent after adding $e_i$ into it. If we use an array of size $n$ to store the out-degree of every node in $A$ (if a node is not in $A$, then the corresponding value in the array is $0$), the judgement can be done in $O(n)$ time. Thus, the time complexity of the algorithm is $O(mn)$.
+			\end{enumerate}
+		\end{solution}
+		
+		\item Let $X$, $Y$, $Z$ be three sets. We say two triples $\left(x_{1}, y_{1}, z_{1}\right)$ and $\left(x_{2}, y_{2}, z_{2}\right)$ in $X \times Y \times Z$ are \textit{disjoint} if $x_{1} \neq x_{2}$, $y_{1} \neq y_{2},$ and $z_{1} \neq z_{2}$. Consider the following problem:
+		
+		\begin{definition}[MAX-3DM] 
+			Given three disjoint sets $X$, $Y$, $Z$ and a nonnegative weight function $c(\cdot)$ on all triples in $X \times Y \times Z$, \textbf{Maximum 3-Dimensional Matching} (MAX-3DM) is to find a collection $\mathcal{F}$ of disjoint triples with maximum total weight.
+		\end{definition}
+		
+		\begin{enumerate}
+			\item Let $D = X \times Y \times Z$. Define independent sets for MAX-3DM.
+			\label{item-Indep}
+			\item Write a greedy algorithm based on Greedy-MAX in the form of \emph{pseudo code}. \label{Item-Greedy}
+			\item Give a counterexample to show that your Greedy-MAX algorithm in Q.~\ref{Item-Greedy} is not optimal.
+			\item Show that: $\max\limits_{F \subseteq D} \frac{v(F)}{u(F)} \leq 3$. {\color{blue}(Hint: you may need Theorem~\ref{Thm-Intersect} for this subquestion.)} 
+		\end{enumerate}
+		\begin{theorem} \label{Thm-Intersect}
+			Suppose an independent system $(E, \mathcal{I})$ is the intersection of $k$ matroids $\left(E, \mathcal{I}_{i}\right)$, $1 \leq i \leq k$; that is, $\mathcal{I}=\bigcap_{i=1}^{k} \mathcal{I}_{i}$. Then $\max\limits_{F \subseteq E} \frac{v(F)}{u(F)} \leq k$, where $v(F)$ is the maximum size of independent subset in $F$ and $u(F)$ is the minimum size of maximal independent subset in $F$.
+		\end{theorem}
+		\begin{solution}
+			\noindent
+			\begin{enumerate}
+				\item We consider the pair $(D,\mathcal{I})$, where $\mathcal{I}$ is a collection of subsets of $D$. A subset of $D$ is in $\mathcal{I}$ if all triples in it are disjoint.We will prove $(D,\mathcal{I})$ is an independent system. Suppose $I \in \mathcal{I}$ and $I' \subseteq I$, since all triples in $I$ are disjoint and we can get $I'$ by deleting some triples in $I$, thus we can say all triples in $I'$ are also disjoint, that is $I' \in \mathcal{I}$, so $(D,\mathcal{I})$ is an independent system.
+				
+				\item {\noindent
+					\begin{minipage}[t]{0.9\textwidth}
+						\centering
+						\begin{algorithm}[H]
+							%\LinesNumbered
+							\KwIn{$D = X \times Y \times Z$ and a nonnegative weight function $c(\cdot)$ on all triples in $D$}
+							\KwOut{a collection $\mathcal{F}$ of disjoint triples with maximum total weight}
+							\BlankLine
+							\caption{$greedy2$} \label{Alg-gre2}
+							sort all triples in $D$ into ordering $\left(x_{1}, y_{1}, z_{1}\right) \geq \left(x_{2}, y_{2}, z_{3}\right) \geq \cdots \geq \left(x_{n}, y_{n}, z_{n}\right)$\;
+							$\mathcal{F} \leftarrow \emptyset$\;
+							\For{$i \leftarrow 1$ to $n$}{
+								\uIf{$\mathcal{F} \cup \{\left(x_{i}, y_{i}, z_{i}\right)\} \in \mathcal{I}$}{
+									$\mathcal{F} \leftarrow \mathcal{F} \cup \{\left(x_{i}, y_{i}, z_{i}\right)\}$\;
+								}
+								\Else{
+									\textbf{continue}\;
+								}
+							}
+							\Return{$\mathcal{F}$}\;
+						\end{algorithm}
+					\end{minipage}
+				}
+				\item A possible counterexample is that we let $X = \{1,2\}, Y = \{3,4\}, Z = \{5,6\}$ and suppose there exists a nonnegative weight function $c(\cdot)$ that would give the triples in $X \times Y \times Z$ weights like below. The $\mathcal{F}$ given by Alg.\ref{Alg-gre2} is $\left\{ \left\langle 1,3,5 \right\rangle, \left\langle 2,4,6 \right\rangle \right\}$ and the total weight is $12$, however, the optimal solution would give $\mathcal{F}$ as $\left\{ \left\langle 1,4,6 \right\rangle, \left\langle 2,3,5 \right\rangle \right\}$, the total weight is $14$.
+				\begin{minipage}{0.9\textwidth}
+					\centering
+					\label{table1}
+					\begin{tabular}[p]{|c|c|}
+						\hline
+						triple & weight \\
+						$\left\langle 1,3,5 \right\rangle$ & 10 \\
+						$\left\langle 1,3,6 \right\rangle$ & 9 \\
+						$\left\langle 1,4,5 \right\rangle$ & 8 \\
+						$\left\langle 1,4,6 \right\rangle$ & 7 \\
+						$\left\langle 2,3,5 \right\rangle$ & 7 \\
+						$\left\langle 2,3,6 \right\rangle$ & 5 \\
+						$\left\langle 2,4,5 \right\rangle$ & 4 \\
+						$\left\langle 2,4,6 \right\rangle$ & 2 \\
+						\hline
+					\end{tabular}
+				\end{minipage}
+				
+				\item Let $\mathcal{I}_{x}$ be a collection of subsets of $D$, a subset $I \subseteq D$ is in $\mathcal{I}_{x}$ if for any two different triples in it, say $\left\langle x_i,y_i,z_i \right\rangle$ and $\left\langle x_j,y_j,z_j \right\rangle$, we have $x_i \neq x_j$. $\mathcal{I}_{y}$ and $\mathcal{I}_{z}$ are similar. Then, we can see that $\mathcal{I}=\bigcap_{i\in\{x,y,z\}} \mathcal{I}_{i}$, where $\mathcal{I}$ is the same as the one defined in the answer to Q.~\ref{item-Indep}.
+				
+				We want to prove that $(D,\mathcal{I}_{i})$ ($i \in \{x,y,z\}$) is a matroid. Suppose $I \in \mathcal{I}_{x}, I' \subseteq I$, it is easy to see $I' \in \mathcal{I}_{x}$. Suppose there are two different subsets of $D$, say $I_1$ and $I_2$, such that $I_1 \in \mathcal{I}_{x}, I_2 \in \mathcal{I}_{x}$ and $|I_1| < |I_2|$. We say that there must exists a triple $\left\langle x_{i2},y_{i2},z_{i2} \right\rangle$ in $I_2$, such that $x_{i2}$ is different from the first element of every triple in $I_1$. Suppose it is not that case, then we have for any triples in $I_2$, there exists a triple in $I_1$, who has the same first element with it. Then according to the definition of $\mathcal{I}_{x}$, we have that $|I_1| \geq |I_2|$, which contradicts that $|I_1| < |I_2|$. Thus, there exist a triple $\left\langle x_{i2},y_{i2},z_{i2} \right\rangle$, whose first element is different from the first element of every triple in $I_1$, then $I_1 \cup \{\left\langle x_{i2},y_{i2},z_{i2}\right\rangle\}$ is in $\mathcal{I}_{x}$. Thus, $(D,\mathcal{I}_{x})$ is a matroid, and the prove for $(D,\mathcal{I}_{y})$ and $(D,\mathcal{I}_{z})$ are similar.
+				
+				Therefore, according to \textbf{theorem}\ref{Thm-Intersect}, we have $\max\limits_{F \subseteq D} \frac{v(F)}{u(F)} \leq 3$.
+			\end{enumerate}
+		\end{solution}
+		
+		
+		
+		\item
+		\textbf{Crowdsourcing} is the process of obtaining needed services, ideas, or content by soliciting contributions from a large group of people, especially an online community. Suppose you want to form a team to complete a crowdsourcing task, and there are $n$ individuals to choose from. Each person $p_i$ can contribute $v_i$ ($v_i > 0$) to the team, but he/she can only work with up to $c_i$ other people. Now it is up to you to choose a certain group of people and maximize their total contributions ($\sum_i{v_i}$).
+		
+		\begin{enumerate}
+			\item Given $\text{OPT}(i, b, c)=$ maximum contributions when choosing from $\{p_1, p_2, \cdots, p_i\}$ with $b$ persons from $\{p_{i+1}, p_{i+2}, \cdots, p_n\}$ already on board and at most $c$ seats left before any of the existing team members gets uncomfortable. Describe the optimal substructure as we did in class and write a recurrence for $\text{OPT}(i, b, c)$.
+			\item Design an algorithm to form your team using dynamic programming, in the form of \emph{pseudo code}.
+			\item Analyze the time and space complexities of your design.
+		\end{enumerate}
+		\begin{solution}
+			\noindent
+			\begin{enumerate}
+				\item[(a)] We consider whether we can shoose $p_i$. If we can choose $p_i$, then 
+				$$ \text{OPT}(i, b, c) = \max\{\text{OPT}(i - 1, b, c), v_i + \text{OPT}(i-1, b+1, \min\{c-1,c_i \} )\}$$ 
+				If we can not choose $p_i$, then 
+				$$ \text{OPT}(i, b, c) = \text{OPT}(i-1, b, c)$$
+				Thus, the recurrence for $\text{OPT}(i, b, c)$ is 
+				\begin{displaymath}
+				\text{OPT}(i, b, c) = \left\{
+				\begin{array}{ll}
+				\max\{\text{OPT}(i - 1, b, c), v_i + \text{OPT}(i-1, b+1, \min\{c-1,c_i \} )\} & c_i \geq b, c > 0, \\ & i \geq 0 \\
+				\text{OPT}(i-1, b, c) & c_i < b, c > 0, \\ & i \geq 0 \\
+				0 & \textrm{otherwise}
+				\end{array}
+				\right.
+				\end{displaymath}
+				
+				\item[(b)] \noindent
+				We first creat an $3$ dimensional array $M$ and initialize it with $-1$ and two global arrays, which are initialized by $c_i$ and $v_i$ ($i \in \{i,2,\dots,n\}$).\\
+				\begin{minipage}[t]{0.9\textwidth}
+					\centering
+					\begin{algorithm}[H]
+						%\LinesNumbered
+						\KwIn{$i,b$ and $c$}
+						\KwOut{the value of $M[i,b,c]$}
+						\BlankLine
+						\caption{Compute-M$(i,b,c)$} \label{Alg-DP1}
+						\uIf{$M[i,b,c]$ has been computed}{
+							\Return{$M[i,b,c]$}\;
+						}
+						\uElseIf{$c_i \geq b\  \textrm{and}\  c > 0 \textrm{and}\  i \geq 0$}
+						{
+							$M[i,b,c] \leftarrow \max\{\textrm{Compute-M}(i-1,b,c), v_i + \textrm{Compute-M}(i-1, b+1, \min\{c-1,c_i \} )\}$
+						}
+						\uElseIf{$c_i < b\ and\  c > 0\ and\ i \geq 0 $}
+						{
+							$M[i,b,c] \leftarrow \textrm{Compute-M}(i-1,b,c)$
+						}
+						\Else
+						{
+							$M[i,b,c] \leftarrow 0$
+						}
+						
+						\Return{$M[i,b,c]$}\;
+					\end{algorithm}
+				\end{minipage}
+				Suppose the array $M$ has been computed, then we call Find-Solution$(n,0,n)$ to get the people we choose.\\
+				\begin{minipage}[t]{0.9\textwidth}
+					\centering
+					\begin{algorithm}[H]
+						%\LinesNumbered
+						\BlankLine
+						\caption{Find-Solution$(i,b,c)$} \label{Alg-DP2}
+						\uIf{$i = 0$}{
+							\Return{$\emptyset$}\;
+						}
+						\uElseIf{$v_i + M[i-1, b+1, \min\{c-1,c_i \} ] > M[i - 1, b, c]$}
+						{
+							\Return{$\{i\}\ \cup$ \textrm{Find-Solution}$(i-1,b+1,\min\{c-1,c_i \})$ }\;
+						}
+						\Else
+						{
+							\Return{Find-Solution$(i-1,b,c)$}\;	
+						}
+					\end{algorithm}
+				\end{minipage}
+				\item[(c)] Since we need an $3$ dimensional array $M$ and two global arrays, the space complexities is $O(n^3)$. To choose the people we need, we just need to figure out the aarray $M$, time spent on this is no more than the number of items in $M$, after that we need to call Find-Solution$(n,0,n)$, this takes $O(n)$. Thus, time complexities is bounded by $O(n^3)$.
+			\end{enumerate}
+		\end{solution}
+	\end{enumerate}
+	
+	
+	\vspace{20pt}
+	
+	\textbf{Remark:} You need to include your .pdf and .tex files in your uploaded .rar or .zip file.
+	
+	%========================================================================
+\end{document}
